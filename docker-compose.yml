@@ -1,0 +1,39 @@
+services:
+  auth_microservice:
+    build: .
+    container_name: auth_microservice
+    env_file:
+      - .env
+    ports:
+      - 127.0.0.1:3000:3000
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - default
+      - dnet
+
+  postgres:
+    container_name: auth_microservice_database_postgres
+    image: postgres:16
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PG_DATA: /var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 127.0.0.1:5432:5432
+    networks:
+      - default
+
+volumes:
+  pgdata:
+
+networks:
+  dnet:
+    name: dnet
